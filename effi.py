@@ -1,9 +1,3 @@
-# py-claude
-cl dev
-
-terminal iteration files 
-
-
 Vocabulary Categories (15 Categories, 20,000+ Words)
 1. Technical Precise (1,200+ words)
 Purpose: Unambiguous technical terminology
