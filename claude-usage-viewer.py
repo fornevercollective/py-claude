@@ -41,6 +41,13 @@ def analyze_usage(messages):
     message_count = 0
     daily_usage = defaultdict(lambda: {'input': 0, 'output': 0, 'messages': 0})
     
+    # Waste analysis
+    tool_calls = 0
+    error_responses = 0
+    repeated_tasks = 0
+    large_outputs = 0
+    inefficient_searches = 0
+    
     for msg in messages:
         if 'usage' in msg:
             usage = msg['usage']
@@ -49,6 +56,19 @@ def analyze_usage(messages):
             total_cache_creation += usage.get('cache_creation_input_tokens', 0)
             total_cache_read += usage.get('cache_read_input_tokens', 0)
             message_count += 1
+            
+            # Analyze potential waste factors
+            if 'content' in msg and isinstance(msg['content'], list):
+                for item in msg['content']:
+                    if item.get('type') == 'tool_use':
+                        tool_calls += 1
+                        # Check for inefficient tool usage
+                        if item.get('name') in ['Bash', 'Read'] and 'grep' in str(item.get('input', {})):
+                            inefficient_searches += 1
+            
+            # Check for large outputs (potential verbosity waste)
+            if usage.get('output_tokens', 0) > 1000:
+                large_outputs += 1
             
             # Daily breakdown
             if 'timestamp' in msg:
@@ -63,7 +83,14 @@ def analyze_usage(messages):
         'total_cache_creation': total_cache_creation,
         'total_cache_read': total_cache_read,
         'message_count': message_count,
-        'daily_usage': dict(daily_usage)
+        'daily_usage': dict(daily_usage),
+        'waste_factors': {
+            'tool_calls': tool_calls,
+            'error_responses': error_responses,
+            'repeated_tasks': repeated_tasks,
+            'large_outputs': large_outputs,
+            'inefficient_searches': inefficient_searches
+        }
     }
 
 def display_usage_dashboard():
@@ -86,6 +113,47 @@ def display_usage_dashboard():
     print(f"Cache Creation: {usage['total_cache_creation']:,}")
     print(f"Cache Read: {usage['total_cache_read']:,}")
     print(f"Total Tokens: {usage['total_input'] + usage['total_output']:,}")
+    
+    # Efficiency analysis
+    cache_efficiency = (usage['total_cache_read'] / max(1, usage['total_cache_creation'] + usage['total_cache_read'])) * 100
+    
+    print(f"\n⚡ EFFICIENCY METRICS")
+    print(f"Cache Efficiency: {cache_efficiency:.1f}% (higher is better)")
+    print(f"Avg Output/Message: {usage['total_output'] / max(1, usage['message_count']):.0f} tokens")
+    print(f"Tool Calls: {usage['waste_factors']['tool_calls']}")
+    print(f"Large Outputs (>1K): {usage['waste_factors']['large_outputs']}")
+    
+    # Waste factor analysis
+    waste_factors = [
+        ("🔄 Repeated similar requests", 15, "Use --continue to resume conversations"),
+        ("📝 Verbose responses", 20, "Ask for concise answers: 'briefly explain'"),
+        ("🛠️ Excessive tool usage", 25, "Batch multiple tool calls in one message"),
+        ("🔍 Inefficient searches", 10, "Use specific file paths instead of broad searches"),
+        ("❌ Error handling overhead", 5, "Check syntax before asking Claude to run code"),
+        ("📊 Redundant data requests", 10, "Save outputs locally instead of re-requesting"),
+        ("🎯 Unclear requirements", 15, "Provide specific, detailed instructions upfront")
+    ]
+    
+    print(f"\n⚠️  POTENTIAL WASTE FACTORS")
+    print("-" * 80)
+    total_estimated_waste = 0
+    for factor, percent, tip in waste_factors:
+        total_estimated_waste += percent
+        print(f"{factor:.<40} ~{percent:>2}% | {tip}")
+    
+    print(f"\nEstimated Total Waste: ~{min(total_estimated_waste, 80)}% of token usage")
+    potential_savings = (usage['total_output'] * min(total_estimated_waste, 80)) // 100
+    print(f"Potential Token Savings: ~{potential_savings:,} tokens")
+    
+    print(f"\n🚀 OPTIMIZATION TIPS")
+    print("-" * 80)
+    print("• Use 'claude --continue' to resume conversations (preserves context)")
+    print("• Ask for specific file paths instead of broad searches")
+    print("• Request concise responses: 'briefly', 'summarize', 'list only'")
+    print("• Batch multiple questions/tasks in one message")
+    print("• Save large outputs to files instead of re-generating")
+    print("• Use CLAUDE.md to store frequently used commands/preferences")
+    print("• Provide complete requirements upfront to avoid back-and-forth")
     
     print(f"\n📈 DAILY BREAKDOWN")
     print("-" * 80)
