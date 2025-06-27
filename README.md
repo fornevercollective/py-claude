@@ -1,3 +1,7 @@
+
+<img width="607" alt="100" src="https://github.com/user-attachments/assets/1ce42e7d-e31e-45ba-a642-333ecc96a85e" />
+
+
 # Claude Efficiency Training System
 
 A comprehensive toolkit for optimizing Claude AI interactions through token usage analysis, word efficiency training, and performance optimization.
