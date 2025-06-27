@@ -1,0 +1,4 @@
+#!/bin/bash
+# Adaptive Learning Engine
+cd "/Users/taderiscon/PyCharmProjects/claude-efficiency-system"
+python3 adaptive_training_engine.py "$@"
