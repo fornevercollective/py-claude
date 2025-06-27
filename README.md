@@ -1,5 +1,8 @@
 
 <img width="607" alt="100" src="https://github.com/user-attachments/assets/1ce42e7d-e31e-45ba-a642-333ecc96a85e" />
+https://github.com/fornevercollective/ai/blob/main/train/global-top-100-spreadsheet-standard-1751000217458.json
+https://github.com/fornevercollective/ai/blob/main/train/global-top-100-analysis-standard-1751000499125.svg
+https://github.com/fornevercollective/ai/blob/main/train/global-top-100-analysis-standard-1751000234802.csv
 
 
 # Claude Efficiency Training System
