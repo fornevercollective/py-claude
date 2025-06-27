@@ -1,0 +1,4 @@
+#!/bin/bash
+# Claude Efficiency Optimizer
+cd "/Users/taderiscon/PyCharmProjects/claude-efficiency-system/core"
+python3 claude_efficiency_optimizer.py "$@"

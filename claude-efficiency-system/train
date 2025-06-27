@@ -1,0 +1,4 @@
+#!/bin/bash
+# Training Dashboard
+cd "/Users/taderiscon/PyCharmProjects/claude-efficiency-system/core"
+python3 efficiency_training_system.py "$@"
